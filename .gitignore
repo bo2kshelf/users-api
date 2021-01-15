@@ -20,3 +20,6 @@ junit/
 
 # package-lock.json
 package-lock.json
+
+# database
+*.db
