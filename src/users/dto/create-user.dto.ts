@@ -11,6 +11,9 @@ export class CreateUserDataInput {
   @Field(() => String)
   @Length(1, 32)
   displayName!: string;
+
+  @Field(() => String)
+  password!: string;
 }
 
 @ArgsType()
