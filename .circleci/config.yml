@@ -122,3 +122,8 @@ workflows:
             - ts-check
             - test-small
             - test-medium
+      - docker/publish:
+          requires:
+            - build
+          deploy: false
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
