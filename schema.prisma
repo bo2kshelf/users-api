@@ -11,5 +11,5 @@ model User {
   id          Int    @id @default(autoincrement())
   userId      String @unique
   displayName String
-  password    String
+  sub         String @unique
 }

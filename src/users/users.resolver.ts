@@ -1,6 +1,8 @@
 import {UseGuards} from '@nestjs/common';
 import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {GqlAuthGuard} from '../auth/gql-auth.guard';
+import {Permissions} from '../auth/permissions.decorator';
+import {PermissionsGuard} from '../auth/permissions.guard';
 import {CurrentUser} from './current-user.decorator';
 import {CreateUserArgs} from './dto/create-user.dto';
 import {DeleteUserArgs} from './dto/delete-user.dto';
@@ -21,6 +23,8 @@ export class UsersResolver {
     () => UserEntity,
     {nullable: true},
   )
+  @Permissions('read:users')
+  @UseGuards(GqlAuthGuard, PermissionsGuard)
   async user(
     @Args({
       type:
@@ -37,9 +41,10 @@ export class UsersResolver {
     () => UserEntity,
     {nullable: false},
   )
-  @UseGuards(GqlAuthGuard)
-  async currentUser(@CurrentUser() user: {userId: string}) {
-    return this.usersService.getUser(user);
+  @Permissions('read:users')
+  @UseGuards(GqlAuthGuard, PermissionsGuard)
+  async currentUser(@CurrentUser() {sub}: CurrentUser) {
+    return this.usersService.getUser({sub});
   }
 
   @Mutation(
@@ -47,7 +52,10 @@ export class UsersResolver {
     () => UserEntity,
     {nullable: false},
   )
+  @Permissions('create:users')
+  @UseGuards(GqlAuthGuard, PermissionsGuard)
   async createUser(
+    @CurrentUser() {sub}: CurrentUser,
     @Args({
       type:
         /* istanbul ignore next */
@@ -55,7 +63,7 @@ export class UsersResolver {
     })
     {data}: CreateUserArgs,
   ) {
-    return this.usersService.createUser(data);
+    return this.usersService.createUser({...data, sub});
   }
 
   @Mutation(
@@ -63,7 +71,10 @@ export class UsersResolver {
     () => UserEntity,
     {nullable: false},
   )
+  @Permissions('update:users')
+  @UseGuards(GqlAuthGuard, PermissionsGuard)
   async updateUser(
+    @CurrentUser() {sub}: CurrentUser,
     @Args({
       type:
         /* istanbul ignore next */
@@ -79,7 +90,10 @@ export class UsersResolver {
     (returns) => UserEntity,
     {nullable: false},
   )
+  @UseGuards(GqlAuthGuard, PermissionsGuard)
+  @Permissions('delete:users')
   async deleteUser(
+    @CurrentUser() {sub}: CurrentUser,
     @Args({
       type:
         /* istanbul ignore next */
