@@ -3,7 +3,7 @@ import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
 import {GqlAuthGuard} from '../auth/gql-auth.guard';
 import {Permissions} from '../auth/permissions.decorator';
 import {PermissionsGuard} from '../auth/permissions.guard';
-import {CurrentUser} from './current-user.decorator';
+import {CurrentUser, CurrentUserPayload} from './current-user.decorator';
 import {CreateUserArgs} from './dto/create-user.dto';
 import {DeleteUserArgs} from './dto/delete-user.dto';
 import {GetUserArgs} from './dto/get-user.dto';
@@ -43,7 +43,7 @@ export class UsersResolver {
   )
   @Permissions('read:users')
   @UseGuards(GqlAuthGuard, PermissionsGuard)
-  async currentUser(@CurrentUser() {sub}: CurrentUser) {
+  async currentUser(@CurrentUser() {sub}: CurrentUserPayload) {
     return this.usersService.getUser({sub});
   }
 
@@ -55,7 +55,7 @@ export class UsersResolver {
   @Permissions('create:users')
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   async createUser(
-    @CurrentUser() {sub}: CurrentUser,
+    @CurrentUser() {sub}: CurrentUserPayload,
     @Args({
       type:
         /* istanbul ignore next */
@@ -74,7 +74,7 @@ export class UsersResolver {
   @Permissions('update:users')
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   async updateUser(
-    @CurrentUser() {sub}: CurrentUser,
+    @CurrentUser() {sub}: CurrentUserPayload,
     @Args({
       type:
         /* istanbul ignore next */
@@ -93,7 +93,7 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   @Permissions('delete:users')
   async deleteUser(
-    @CurrentUser() {sub}: CurrentUser,
+    @CurrentUser() {sub}: CurrentUserPayload,
     @Args({
       type:
         /* istanbul ignore next */
