@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 COPY tsconfig.json tsconfig.build.json ./
+COPY schema.prisma ./
 COPY src ./src
 
 RUN yarn install --frozen-lockfile
