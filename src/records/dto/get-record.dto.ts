@@ -1,7 +1,7 @@
 import {ArgsType, Field, ID} from '@nestjs/graphql';
 
 @ArgsType()
-export class GetUserArgs {
+export class GetRecordArgs {
   @Field(() => ID)
-  shortName!: string;
+  id!: string;
 }

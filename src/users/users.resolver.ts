@@ -1,8 +1,17 @@
 import {UseGuards} from '@nestjs/common';
-import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import {User} from '@prisma/client';
 import {GqlAuthGuard} from '../auth/gql-auth.guard';
 import {Permissions} from '../auth/permissions.decorator';
 import {PermissionsGuard} from '../auth/permissions.guard';
+import {RecordEntity} from '../records/record.entity';
 import {CurrentUser, CurrentUserPayload} from './current-user.decorator';
 import {CreateUserArgs} from './dto/create-user.dto';
 import {DeleteUserArgs} from './dto/delete-user.dto';
@@ -17,6 +26,11 @@ import {UsersService} from './users.service';
 )
 export class UsersResolver {
   constructor(private usersService: UsersService) {}
+
+  @ResolveField(() => [RecordEntity])
+  async records(@Parent() {id}: User) {
+    return this.usersService.getRecords({id});
+  }
 
   @Query(
     /* istanbul ignore next */

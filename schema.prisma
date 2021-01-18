@@ -8,8 +8,21 @@ generator client {
 }
 
 model User {
-  id          Int    @id @default(autoincrement())
-  userId      String @unique
+  id          Int      @id @default(autoincrement())
+  shortName   String   @unique
   displayName String
-  sub         String @unique
+  sub         String   @unique
+  records     Record[]
+}
+
+model Record {
+  id        Int      @id @default(autoincrement())
+  book      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  have      Boolean
+  read      Boolean
+  reading   Boolean
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
 }
