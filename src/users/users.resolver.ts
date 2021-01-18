@@ -31,9 +31,9 @@ export class UsersResolver {
         /* istanbul ignore next */
         () => GetUserArgs,
     })
-    {id, userId}: GetUserArgs,
+    where: GetUserArgs,
   ) {
-    return this.usersService.getUser({id, userId});
+    return this.usersService.getUser(where);
   }
 
   @Query(

@@ -2,11 +2,8 @@ import {ArgsType, Field, ID, InputType} from '@nestjs/graphql';
 
 @InputType()
 export class DeleteUserWhereInput {
-  @Field(() => ID, {nullable: true})
-  id!: number;
-
-  @Field(() => ID, {nullable: true})
-  userId?: string;
+  @Field(() => ID)
+  userId!: string;
 }
 
 @ArgsType()

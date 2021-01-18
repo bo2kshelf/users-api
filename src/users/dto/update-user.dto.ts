@@ -3,11 +3,8 @@ import {IsAlphanumeric, Length} from 'class-validator';
 
 @InputType()
 export class UpdateUserWhereInput {
-  @Field(() => ID, {nullable: true})
-  id!: number;
-
-  @Field(() => ID, {nullable: true})
-  userId?: string;
+  @Field(() => ID)
+  userId!: string;
 }
 
 @InputType()
