@@ -1,4 +1,4 @@
-import {Field, ID, ObjectType} from '@nestjs/graphql';
+import {Field, GraphQLISODateTime, ID, ObjectType} from '@nestjs/graphql';
 import {IsNumberString} from 'class-validator';
 
 @ObjectType('Record')
@@ -15,4 +15,10 @@ export class RecordEntity {
 
   @Field(() => Boolean)
   reading!: boolean;
+
+  @Field(() => GraphQLISODateTime)
+  createdAt!: Date;
+
+  @Field(() => GraphQLISODateTime)
+  updatedAt!: Date;
 }
