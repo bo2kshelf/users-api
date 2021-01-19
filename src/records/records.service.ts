@@ -10,8 +10,32 @@ export class RecordsService {
     return this.prismaService.record.findUnique({where});
   }
 
-  async createRecord(data: Prisma.RecordCreateInput) {
-    return this.prismaService.record.create({data});
+  async createRecord(data: {
+    bookId: string;
+    have: boolean;
+    read: boolean;
+    reading: boolean;
+    user: {shortName: string};
+  }) {
+    const existRecord = await this.prismaService.record.findFirst({
+      where: {
+        bookId: data.bookId,
+        user: {shortName: data.user.shortName},
+      },
+    });
+    if (existRecord)
+      throw new Error(
+        `user ${data.user.shortName} already has a record for book ${data.bookId}`,
+      );
+
+    return this.prismaService.record.create({
+      data: {
+        ...data,
+        user: {
+          connect: data.user,
+        },
+      },
+    });
   }
 
   async updateRecord(

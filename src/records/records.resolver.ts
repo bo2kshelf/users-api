@@ -41,7 +41,7 @@ export class RecordsResolver {
   ) {
     return this.recordsService.createRecord({
       ...data,
-      user: {connect: user},
+      user,
     });
   }
 
