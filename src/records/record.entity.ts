@@ -1,7 +1,7 @@
 import {Field, ID, ObjectType} from '@nestjs/graphql';
 import {IsNumberString} from 'class-validator';
 
-@ObjectType()
+@ObjectType('Record')
 export class RecordEntity {
   @Field(() => ID)
   @IsNumberString()
