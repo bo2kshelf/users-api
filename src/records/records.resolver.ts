@@ -1,4 +1,4 @@
-import {UsePipes, ValidationPipe} from '@nestjs/common';
+import {NotFoundException, UsePipes, ValidationPipe} from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -37,10 +37,12 @@ export class RecordsResolver {
   }
 
   @Mutation(() => RecordEntity)
-  createRecord(
+  async createRecord(
     @Args({type: () => CreateRecordArgs})
     {data: {user, ...data}}: CreateRecordArgs,
   ) {
+    if (!(await this.recordsService.checkIfBookExist(data.bookId)))
+      throw new NotFoundException({bookId: data.bookId});
     return this.recordsService.createRecord({
       ...data,
       user,
