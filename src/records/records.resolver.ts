@@ -1,3 +1,4 @@
+import {UsePipes, ValidationPipe} from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -16,6 +17,7 @@ import {RecordEntity} from './record.entity';
 import {RecordsService} from './records.service';
 
 @Resolver(() => RecordEntity)
+@UsePipes(new ValidationPipe({transform: true}))
 export class RecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
