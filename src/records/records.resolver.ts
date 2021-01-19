@@ -1,4 +1,13 @@
-import {Args, Mutation, Query, Resolver} from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import {Record} from '@prisma/client';
+import {BookEntity} from '../book/book.entity';
 import {CreateRecordArgs} from './dto/create-record.dto';
 import {DeleteRecordArgs} from './dto/delete-record.dto';
 import {GetRecordArgs} from './dto/get-record.dto';
@@ -9,6 +18,11 @@ import {RecordsService} from './records.service';
 @Resolver(() => RecordEntity)
 export class RecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
+
+  @ResolveField(() => BookEntity)
+  book(@Parent() {book}: Record) {
+    return {id: book};
+  }
 
   @Query(() => RecordEntity)
   record(
