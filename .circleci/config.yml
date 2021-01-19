@@ -100,6 +100,40 @@ jobs:
           flags: medium
           file: ./coverage/lcov.info
 
+  test-large:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: |
+            yarn run test:large --ci --forceExit \
+              --reporters=default --reporters=jest-junit \
+              --testResultsProcessor=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./junit
+            JEST_JUNIT_OUTPUT_NAME: jest.xml
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./coverage
+      - codecov/upload:
+          flags: large
+          file: ./coverage/lcov.info
+
+  test-e2e:
+    docker:
+      - image: circleci/node:14.15.3
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: yarn
+      - run:
+          command: |
+            yarn run test:e2e --ci --forceExit
+
 workflows:
   version: 2
   main:
@@ -115,6 +149,16 @@ workflows:
       - test-medium:
           requires:
             - ts-check
+      - test-large:
+          requires:
+            - ts-check
+            - test-small
+            - test-medium
+      - test-e2e:
+          requires:
+            - ts-check
+            - test-small
+            - test-medium
       - build:
           requires:
             - lint-eslint
@@ -122,6 +166,8 @@ workflows:
             - ts-check
             - test-small
             - test-medium
+            - test-large
+            - test-e2e
       - docker/publish:
           requires:
             - build
