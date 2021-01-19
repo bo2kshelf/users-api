@@ -16,9 +16,9 @@ import {RecordEntity} from '../records/record.entity';
 import {CurrentUser, CurrentUserPayload} from './current-user.decorator';
 import {CreateUserArgs} from './dto/create-user.dto';
 import {DeleteUserArgs} from './dto/delete-user.dto';
-import {GetUserArgs} from './dto/get-user.dto';
 import {UserRecordsArgs} from './dto/records.dto';
 import {UpdateUserArgs} from './dto/update-user.dto';
+import {UserArgs} from './dto/user.dto';
 import {UserEntity} from './users.entity';
 import {UsersService} from './users.service';
 
@@ -54,9 +54,9 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   async user(
     @Args({
-      type: () => GetUserArgs,
+      type: () => UserArgs,
     })
-    where: GetUserArgs,
+    where: UserArgs,
   ) {
     return this.usersService.getUser(where);
   }
