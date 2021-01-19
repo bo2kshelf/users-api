@@ -87,7 +87,7 @@ describe(`${RecordsModule.name} w/o DB Access`, () => {
           $read: Boolean!
           $reading: Boolean!
           $have: Boolean!
-          $userShortName: ID!
+          $userName: ID!
         ) {
           createRecord(
             data: {
@@ -95,7 +95,7 @@ describe(`${RecordsModule.name} w/o DB Access`, () => {
               read: $read
               reading: $reading
               have: $have
-              user: {shortName: $userShortName}
+              user: {shortName: $userName}
             }
           ) {
             id
@@ -115,7 +115,7 @@ describe(`${RecordsModule.name} w/o DB Access`, () => {
           read: true,
           reading: true,
           have: true,
-          userShortName: 'testuser',
+          userName: 'testuser',
         },
       ])('正常系 %#', async (variables) => {
         const mock = jest.fn();
@@ -139,7 +139,7 @@ describe(`${RecordsModule.name} w/o DB Access`, () => {
               read: true,
               reading: true,
               have: true,
-              userShortName: 'testuser',
+              userName: 'testuser',
             },
           });
           expect(mock).not.toHaveBeenCalled();
@@ -158,7 +158,7 @@ describe(`${RecordsModule.name} w/o DB Access`, () => {
               read: true,
               reading: true,
               have: true,
-              userShortName: shortName,
+              userName: shortName,
             },
           });
           expect(mock).not.toHaveBeenCalled();

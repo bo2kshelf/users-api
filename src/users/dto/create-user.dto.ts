@@ -6,7 +6,7 @@ export class CreateUserDataInput {
   @Field(() => ID)
   @IsAlphanumeric()
   @Length(1, 32)
-  shortName!: string;
+  userName!: string;
 
   @Field(() => String)
   @Length(1, 32)

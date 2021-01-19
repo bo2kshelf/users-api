@@ -6,7 +6,7 @@ export class CreateRecordDataUserInput {
   @Field(() => ID)
   @Min(3)
   @Max(16)
-  shortName!: string;
+  userName!: string;
 }
 
 @InputType()

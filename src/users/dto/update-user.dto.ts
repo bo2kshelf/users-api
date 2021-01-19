@@ -4,7 +4,7 @@ import {IsAlphanumeric, Length} from 'class-validator';
 @InputType()
 export class UpdateUserWhereInput {
   @Field(() => ID)
-  shortName!: string;
+  userName!: string;
 }
 
 @InputType()
@@ -12,7 +12,7 @@ export class UpdateUserDataInput {
   @Field(() => ID, {nullable: true})
   @IsAlphanumeric()
   @Length(1, 32)
-  shortName?: string;
+  userName?: string;
 
   @Field(() => String, {nullable: true})
   @Length(1, 32)

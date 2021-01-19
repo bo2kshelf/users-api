@@ -39,17 +39,17 @@ export class RecordsService {
     have: boolean;
     read: boolean;
     reading: boolean;
-    user: {shortName: string};
+    user: {userName: string};
   }) {
     const existRecord = await this.prismaService.record.findFirst({
       where: {
         bookId: data.bookId,
-        user: {shortName: data.user.shortName},
+        user: {userName: data.user.userName},
       },
     });
     if (existRecord)
       throw new Error(
-        `user ${data.user.shortName} already has a record for book ${data.bookId}`,
+        `user ${data.user.userName} already has a record for book ${data.bookId}`,
       );
 
     return this.prismaService.record.create({

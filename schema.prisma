@@ -9,7 +9,7 @@ generator client {
 
 model User {
   id          Int      @id @default(autoincrement())
-  shortName   String   @unique
+  userName    String   @unique
   displayName String
   sub         String   @unique
   records     Record[]
