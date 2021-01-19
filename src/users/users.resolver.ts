@@ -1,6 +1,7 @@
 import {UseGuards} from '@nestjs/common';
 import {
   Args,
+  Int,
   Mutation,
   Parent,
   Query,
@@ -16,6 +17,7 @@ import {CurrentUser, CurrentUserPayload} from './current-user.decorator';
 import {CreateUserArgs} from './dto/create-user.dto';
 import {DeleteUserArgs} from './dto/delete-user.dto';
 import {GetUserArgs} from './dto/get-user.dto';
+import {UserRecordsArgs} from './dto/records.dto';
 import {UpdateUserArgs} from './dto/update-user.dto';
 import {UserEntity} from './users.entity';
 import {UsersService} from './users.service';
@@ -25,8 +27,26 @@ export class UsersResolver {
   constructor(private usersService: UsersService) {}
 
   @ResolveField(() => [RecordEntity])
-  async records(@Parent() {id}: User) {
-    return this.usersService.getRecords({id});
+  async records(
+    @Parent() {id}: User,
+
+    @Args({type: () => UserRecordsArgs})
+    {cursor, ...args}: UserRecordsArgs,
+  ) {
+    return this.usersService.getRecords(
+      {id},
+      {
+        ...args,
+        cursor: cursor && {
+          id: cursor.id ? parseInt(cursor.id, 10) : undefined,
+        },
+      },
+    );
+  }
+
+  @ResolveField(() => Int)
+  async recordsCount(@Parent() {id}: User) {
+    return this.usersService.getRecordsCount({id});
   }
 
   @Query(() => UserEntity, {nullable: true})

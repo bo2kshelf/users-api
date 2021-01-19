@@ -1,13 +1,24 @@
 import {Injectable} from '@nestjs/common';
 import {Prisma, User} from '@prisma/client';
 import {PrismaService} from '../prisma/prisma.service';
-
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
-  async getRecords(where: Prisma.UserWhereUniqueInput) {
-    return this.prismaService.user.findUnique({where}).records();
+  async getRecords(
+    where: Prisma.UserWhereUniqueInput,
+    args: {
+      cursor?: Prisma.FindManyRecordArgs['cursor'];
+      skip?: number;
+      take?: number;
+      orderBy?: Pick<Prisma.RecordOrderByInput, 'createdAt' | 'updatedAt'>;
+    },
+  ) {
+    return this.prismaService.user.findUnique({where}).records({...args});
+  }
+
+  async getRecordsCount(where: Prisma.UserWhereUniqueInput) {
+    return this.prismaService.record.count({where: {user: where}});
   }
 
   async getUser(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
