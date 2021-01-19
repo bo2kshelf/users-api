@@ -11,7 +11,7 @@ export class UpdateRecordDataUserInput {
 export class UpdateRecordDataInput {
   @Field(() => ID, {nullable: true})
   @IsMongoId()
-  book?: string;
+  bookId?: string;
 
   @Field(() => Boolean, {nullable: true})
   have?: boolean;

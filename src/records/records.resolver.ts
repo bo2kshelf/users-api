@@ -20,8 +20,8 @@ export class RecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
   @ResolveField(() => BookEntity)
-  book(@Parent() {book}: Record) {
-    return {id: book};
+  book(@Parent() {bookId}: Record) {
+    return {id: bookId};
   }
 
   @Query(() => RecordEntity)

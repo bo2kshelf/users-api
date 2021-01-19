@@ -11,7 +11,7 @@ export class CreateRecordDataUserInput {
 export class CreateRecordDataInput {
   @Field(() => ID)
   @IsMongoId()
-  book!: string;
+  bookId!: string;
 
   @Field(() => Boolean)
   have!: boolean;
