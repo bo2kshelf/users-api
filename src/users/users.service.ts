@@ -1,6 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {Prisma, User} from '@prisma/client';
 import {PrismaService} from '../prisma/prisma.service';
+import {CurrentUserPayload} from './current-user.decorator';
 @Injectable()
 export class UsersService {
   constructor(private prismaService: PrismaService) {}
@@ -57,5 +58,16 @@ export class UsersService {
 
   deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prismaService.user.delete({where});
+  }
+
+  async checkCurrentUserIsItself(
+    payload: CurrentUserPayload,
+    where: Prisma.UserWhereUniqueInput,
+  ) {
+    return this.prismaService.record
+      .findUnique({where})
+      .user({select: {sub: true}})
+      .then((user) => Boolean(user?.sub === payload.sub))
+      .catch(() => false);
   }
 }

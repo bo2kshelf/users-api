@@ -4,6 +4,7 @@ import {Prisma} from '@prisma/client';
 import {gql, request} from 'graphql-request';
 import ExternalConfig from '../config/external.config';
 import {PrismaService} from '../prisma/prisma.service';
+import {CurrentUserPayload} from '../users/current-user.decorator';
 
 @Injectable()
 export class RecordsService {
@@ -71,5 +72,16 @@ export class RecordsService {
 
   async deleteRecord(where: Prisma.RecordWhereUniqueInput) {
     return this.prismaService.record.delete({where});
+  }
+
+  async checkCurrentUserIsRecordOwner(
+    payload: CurrentUserPayload,
+    where: Prisma.RecordWhereUniqueInput,
+  ) {
+    return this.prismaService.record
+      .findUnique({where})
+      .user({select: {sub: true}})
+      .then((user) => Boolean(user?.sub === payload.sub))
+      .catch(() => false);
   }
 }

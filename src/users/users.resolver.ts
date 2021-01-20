@@ -1,4 +1,4 @@
-import {UseGuards} from '@nestjs/common';
+import {UnauthorizedException, UseGuards} from '@nestjs/common';
 import {
   Args,
   Int,
@@ -85,12 +85,14 @@ export class UsersResolver {
   @Permissions('update:users')
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   async updateUser(
-    @CurrentUser() {sub}: CurrentUserPayload,
+    @CurrentUser() currentUser: CurrentUserPayload,
     @Args({
       type: () => UpdateUserArgs,
     })
     {where, data}: UpdateUserArgs,
   ) {
+    if (!(await this.usersService.checkCurrentUserIsItself(currentUser, where)))
+      throw new UnauthorizedException([where]);
     return this.usersService.updateUser(where, data);
   }
 
@@ -98,12 +100,14 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   @Permissions('delete:users')
   async deleteUser(
-    @CurrentUser() {sub}: CurrentUserPayload,
+    @CurrentUser() currentUser: CurrentUserPayload,
     @Args({
       type: () => DeleteUserArgs,
     })
     {where}: DeleteUserArgs,
   ) {
+    if (!(await this.usersService.checkCurrentUserIsItself(currentUser, where)))
+      throw new UnauthorizedException([where]);
     return this.usersService.deleteUser(where);
   }
 }

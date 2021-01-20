@@ -1,4 +1,10 @@
-import {NotFoundException, UsePipes, ValidationPipe} from '@nestjs/common';
+import {
+  NotFoundException,
+  UnauthorizedException,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -8,7 +14,9 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import {Record} from '@prisma/client';
+import {GqlAuthGuard} from '../auth/gql-auth.guard';
 import {BookEntity} from '../book/book.entity';
+import {CurrentUser, CurrentUserPayload} from '../users/current-user.decorator';
 import {CreateRecordArgs} from './dto/create-record.dto';
 import {DeleteRecordArgs} from './dto/delete-record.dto';
 import {GetRecordArgs} from './dto/get-record.dto';
@@ -18,6 +26,7 @@ import {RecordsService} from './records.service';
 
 @Resolver(() => RecordEntity)
 @UsePipes(new ValidationPipe({transform: true}))
+@UseGuards(GqlAuthGuard)
 export class RecordsResolver {
   constructor(private readonly recordsService: RecordsService) {}
 
@@ -27,7 +36,7 @@ export class RecordsResolver {
   }
 
   @Query(() => RecordEntity)
-  record(
+  async record(
     @Args({type: () => GetRecordArgs})
     {id}: GetRecordArgs,
   ) {
@@ -50,25 +59,39 @@ export class RecordsResolver {
   }
 
   @Mutation(() => RecordEntity)
-  updateRecord(
+  async updateRecord(
+    @CurrentUser() currentUser: CurrentUserPayload,
+
     @Args({type: () => UpdateRecordArgs})
     {where, data}: UpdateRecordArgs,
   ) {
-    return this.recordsService.updateRecord(
-      {
-        id: parseInt(where.id, 10),
-      },
-      data,
-    );
+    const parsedWhere = {id: parseInt(where.id, 10)};
+    if (
+      !(await this.recordsService.checkCurrentUserIsRecordOwner(
+        currentUser,
+        parsedWhere,
+      ))
+    )
+      throw new UnauthorizedException([where]);
+    return this.recordsService.updateRecord(parsedWhere, data);
   }
 
   @Mutation(() => RecordEntity)
-  deleteRecord(
+  async deleteRecord(
+    @CurrentUser() currentUser: CurrentUserPayload,
+
     @Args({type: () => DeleteRecordArgs})
     {where}: DeleteRecordArgs,
   ) {
-    return this.recordsService.deleteRecord({
-      id: parseInt(where.id, 10),
-    });
+    const parsedWhere = {id: parseInt(where.id, 10)};
+    if (
+      !(await this.recordsService.checkCurrentUserIsRecordOwner(
+        currentUser,
+        parsedWhere,
+      ))
+    )
+      throw new UnauthorizedException([where]);
+
+    return this.recordsService.deleteRecord(parsedWhere);
   }
 }
