@@ -1,4 +1,8 @@
-import {UnauthorizedException, UseGuards} from '@nestjs/common';
+import {
+  NotFoundException,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import {
   Args,
   Int,
@@ -54,16 +58,16 @@ export class UsersResolver {
     return this.usersService.getRecordsCount({id});
   }
 
-  @Query(() => UserEntity, {nullable: true})
+  @Query(() => UserEntity)
   @Permissions('read:users')
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   async user(
-    @Args({
-      type: () => UserArgs,
-    })
+    @Args({type: () => UserArgs})
     where: UserArgs,
   ) {
-    return this.usersService.getUser(where);
+    const result = this.usersService.getUser(where);
+    if (!result) throw new NotFoundException(where);
+    return result;
   }
 
   @Query(() => UserEntity, {nullable: false})
