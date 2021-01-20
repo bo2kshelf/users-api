@@ -7,7 +7,13 @@ import {
   Int,
   registerEnumType,
 } from '@nestjs/graphql';
-import {IsInt, IsNumberString, Validate, ValidateNested} from 'class-validator';
+import {
+  IsInt,
+  IsMongoId,
+  IsNumberString,
+  Validate,
+  ValidateNested,
+} from 'class-validator';
 import {CannotUseWith} from '../../validators/cannot-use-with.validator';
 
 export enum UserRecordsArgsOrderByEnum {
@@ -39,6 +45,25 @@ export class UserRecordsArgsCursor {
   id!: string;
 }
 
+@InputType()
+export class UserRecordsArgsWhere {
+  @Field(() => ID, {nullable: true})
+  id?: string;
+
+  @Field(() => ID, {nullable: true})
+  @IsMongoId()
+  bookId?: string;
+
+  @Field(() => Boolean, {nullable: true})
+  have?: boolean;
+
+  @Field(() => Boolean, {nullable: true})
+  read?: boolean;
+
+  @Field(() => Boolean, {nullable: true})
+  reading?: boolean;
+}
+
 @ArgsType()
 export class UserRecordsArgs {
   @Field(() => UserRecordsArgsCursor, {nullable: true})
@@ -55,4 +80,7 @@ export class UserRecordsArgs {
 
   @Field(() => UserRecordsArgsOrderBy, {nullable: true})
   orderBy?: UserRecordsArgsOrderBy;
+
+  @Field(() => UserRecordsArgsWhere, {nullable: true})
+  where?: UserRecordsArgsWhere;
 }

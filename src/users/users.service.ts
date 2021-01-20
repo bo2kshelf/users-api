@@ -13,6 +13,7 @@ export class UsersService {
       skip?: number;
       take?: number;
       orderBy?: Pick<Prisma.RecordOrderByInput, 'createdAt' | 'updatedAt'>;
+      where?: Prisma.RecordWhereInput;
     },
   ) {
     return this.prismaService.user.findUnique({where}).records({...args});

@@ -31,14 +31,19 @@ export class UsersResolver {
     @Parent() {id}: User,
 
     @Args({type: () => UserRecordsArgs})
-    {cursor, ...args}: UserRecordsArgs,
+    {cursor, where, ...args}: UserRecordsArgs,
   ) {
     return this.usersService.getRecords(
       {id},
       {
         ...args,
         cursor: cursor && {
+          ...cursor,
           id: cursor.id ? parseInt(cursor.id, 10) : undefined,
+        },
+        where: where && {
+          ...where,
+          id: where.id ? parseInt(where.id, 10) : undefined,
         },
       },
     );
