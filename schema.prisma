@@ -12,6 +12,7 @@ model User {
   userName    String   @unique
   displayName String
   sub         String   @unique
+  picture     String
   records     Record[]
 }
 

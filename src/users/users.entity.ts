@@ -7,4 +7,7 @@ export class UserEntity {
 
   @Field(() => String)
   displayName!: string;
+
+  @Field(() => String)
+  picture!: string;
 }

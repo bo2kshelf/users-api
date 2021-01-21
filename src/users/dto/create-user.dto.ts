@@ -1,5 +1,5 @@
 import {ArgsType, Field, ID, InputType} from '@nestjs/graphql';
-import {IsAlphanumeric, Length} from 'class-validator';
+import {IsAlphanumeric, IsUrl, Length} from 'class-validator';
 
 @InputType()
 export class CreateUserDataInput {
@@ -11,6 +11,10 @@ export class CreateUserDataInput {
   @Field(() => String)
   @Length(1, 32)
   displayName!: string;
+
+  @Field(() => String)
+  @IsUrl()
+  picture!: string;
 }
 
 @ArgsType()
