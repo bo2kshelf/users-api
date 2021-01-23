@@ -1,10 +1,15 @@
 import {
+  HttpService,
+  Inject,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
+import {ConfigType} from '@nestjs/config';
 import {
   Args,
+  Context,
   Int,
   Mutation,
   Parent,
@@ -12,14 +17,12 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import {User} from '@prisma/client';
+import Auth0Config from '../auth/auth0.config';
 import {GqlAuthGuard} from '../auth/gql-auth.guard';
 import {Permissions} from '../auth/permissions.decorator';
 import {PermissionsGuard} from '../auth/permissions.guard';
 import {RecordEntity} from '../records/record.entity';
 import {CurrentUser, CurrentUserPayload} from './current-user.decorator';
-import {CreateUserArgs} from './dto/create-user.dto';
-import {DeleteUserArgs} from './dto/delete-user.dto';
 import {UserRecordsArgs} from './dto/records.dto';
 import {UpdateUserArgs} from './dto/update-user.dto';
 import {UserArgs} from './dto/user.dto';
@@ -28,34 +31,57 @@ import {UsersService} from './users.service';
 
 @Resolver(() => UserEntity)
 export class UsersResolver {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly httpService: HttpService,
+    @Inject(Auth0Config.KEY)
+    private readonly auth0Config: ConfigType<typeof Auth0Config>,
+  ) {}
 
   @ResolveField(() => [RecordEntity])
   async records(
-    @Parent() {id}: User,
-
+    @Parent() {userName}: UserEntity,
     @Args({type: () => UserRecordsArgs})
-    {cursor, where, ...args}: UserRecordsArgs,
+    {cursor, ...args}: UserRecordsArgs,
   ) {
     return this.usersService.getRecords(
-      {id},
+      {userName},
       {
         ...args,
         cursor: cursor && {
           ...cursor,
           id: cursor.id ? parseInt(cursor.id, 10) : undefined,
         },
-        where: where && {
-          ...where,
-          id: where.id ? parseInt(where.id, 10) : undefined,
-        },
       },
     );
   }
 
   @ResolveField(() => Int)
-  async recordsCount(@Parent() {id}: User) {
-    return this.usersService.getRecordsCount({id});
+  async recordsCount(@Parent() {userName}: UserEntity) {
+    return this.usersService.getRecordsCount({userName});
+  }
+
+  @Query(() => UserEntity, {nullable: false})
+  @Permissions('read:users')
+  @UseGuards(GqlAuthGuard, PermissionsGuard)
+  async currentUser(
+    @Context('req') req: any,
+    @CurrentUser() {sub}: CurrentUserPayload,
+  ): Promise<UserEntity> {
+    const user = await this.usersService.getUser(sub);
+    if (user?.profile) return user.profile;
+    else
+      return this.httpService
+        .get(`${this.auth0Config.issuer}/userinfo`, {
+          headers: {authorization: req.headers.authorization},
+        })
+        .toPromise()
+        .then(({data: {name, picture}}) => ({picture, displayName: name}))
+        .then((data) => this.usersService.ensureUser(sub, data))
+        .then((profile) => {
+          if (profile) return profile;
+          throw new InternalServerErrorException();
+        });
   }
 
   @Query(() => UserEntity)
@@ -65,29 +91,9 @@ export class UsersResolver {
     @Args({type: () => UserArgs})
     where: UserArgs,
   ) {
-    const result = this.usersService.getUser(where);
+    const result = this.usersService.getProfile(where);
     if (!result) throw new NotFoundException(where);
     return result;
-  }
-
-  @Query(() => UserEntity, {nullable: false})
-  @Permissions('read:users')
-  @UseGuards(GqlAuthGuard, PermissionsGuard)
-  async currentUser(@CurrentUser() {sub}: CurrentUserPayload) {
-    return this.usersService.getUser({sub});
-  }
-
-  @Mutation(() => UserEntity, {nullable: false})
-  @Permissions('create:users')
-  @UseGuards(GqlAuthGuard, PermissionsGuard)
-  async createUser(
-    @CurrentUser() {sub}: CurrentUserPayload,
-    @Args({
-      type: () => CreateUserArgs,
-    })
-    {data}: CreateUserArgs,
-  ) {
-    return this.usersService.createUser({...data, sub});
   }
 
   @Mutation(() => UserEntity, {nullable: false})
@@ -95,28 +101,12 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard, PermissionsGuard)
   async updateUser(
     @CurrentUser() currentUser: CurrentUserPayload,
-    @Args({
-      type: () => UpdateUserArgs,
-    })
+    @Args({type: () => UpdateUserArgs})
     {where, data}: UpdateUserArgs,
   ) {
-    if (!(await this.usersService.checkCurrentUserIsItself(currentUser, where)))
-      throw new UnauthorizedException([where]);
-    return this.usersService.updateUser(where, data);
-  }
+    if (!(await this.usersService.isCurrentUserMe(currentUser, where.userName)))
+      throw new UnauthorizedException({userName: where.userName});
 
-  @Mutation((returns) => UserEntity, {nullable: false})
-  @UseGuards(GqlAuthGuard, PermissionsGuard)
-  @Permissions('delete:users')
-  async deleteUser(
-    @CurrentUser() currentUser: CurrentUserPayload,
-    @Args({
-      type: () => DeleteUserArgs,
-    })
-    {where}: DeleteUserArgs,
-  ) {
-    if (!(await this.usersService.checkCurrentUserIsItself(currentUser, where)))
-      throw new UnauthorizedException([where]);
-    return this.usersService.deleteUser(where);
+    return this.usersService.updateProfile(where, data);
   }
 }

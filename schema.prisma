@@ -8,12 +8,18 @@ generator client {
 }
 
 model User {
+  sub       String  @id
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId Int
+}
+
+model Profile {
   id          Int      @id @default(autoincrement())
   userName    String   @unique
   displayName String
-  sub         String   @unique
   picture     String
   records     Record[]
+  user        User?
 }
 
 model Record {
@@ -24,6 +30,6 @@ model Record {
   have      Boolean
   read      Boolean
   reading   Boolean
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
+  profile   Profile? @relation(fields: [profileId], references: [id])
+  profileId Int?
 }

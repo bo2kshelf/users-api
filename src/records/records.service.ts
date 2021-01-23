@@ -15,7 +15,16 @@ export class RecordsService {
     private externalConfig: ConfigType<typeof ExternalConfig>,
   ) {}
 
-  async checkIfBookExist(id: string): Promise<boolean> {
+  async isCurrentUserMe(
+    currentUser: CurrentUserPayload,
+    userName: string,
+  ): Promise<boolean> {
+    return this.prismaService.user
+      .findUnique({where: {sub: currentUser.sub}, select: {profile: true}})
+      .then((user) => user?.profile.userName === userName);
+  }
+
+  async isBookExist(id: string): Promise<boolean> {
     return request(
       this.externalConfig.booksApiEndpoint,
       gql`
@@ -31,34 +40,45 @@ export class RecordsService {
       .catch(() => false);
   }
 
+  async isAlreadyRecorded(userName: string, bookId: string): Promise<boolean> {
+    return this.prismaService.record
+      .count({where: {bookId, profile: {userName}}})
+      .then((count) => count !== 0);
+  }
+
+  async isExistRecord(where: Prisma.RecordWhereUniqueInput): Promise<boolean> {
+    return this.prismaService.record
+      .findUnique({where})
+      .then((record) => Boolean(record));
+  }
+
+  async isCurrentUserRecordOwner(
+    currentUser: CurrentUserPayload,
+    where: Prisma.RecordWhereUniqueInput,
+  ): Promise<boolean> {
+    return this.prismaService.record
+      .findUnique({where, select: {profile: {select: {user: true}}}})
+      .then((record) => record?.profile?.user?.sub === currentUser.sub)
+      .catch(() => false);
+  }
+
   async getRecord(where: Prisma.RecordWhereUniqueInput) {
     return this.prismaService.record.findUnique({where});
   }
 
-  async createRecord(data: {
-    bookId: string;
-    have: boolean;
-    read: boolean;
-    reading: boolean;
-    user: {userName: string};
-  }) {
-    const existRecord = await this.prismaService.record.findFirst({
-      where: {
-        bookId: data.bookId,
-        user: {userName: data.user.userName},
-      },
-    });
-    if (existRecord)
-      throw new Error(
-        `user ${data.user.userName} already has a record for book ${data.bookId}`,
-      );
-
+  async createRecord(
+    profile: {userName: string},
+    data: {
+      bookId: string;
+      have: boolean;
+      read: boolean;
+      reading: boolean;
+    },
+  ) {
     return this.prismaService.record.create({
       data: {
         ...data,
-        user: {
-          connect: data.user,
-        },
+        profile: {connect: {userName: profile.userName}},
       },
     });
   }
@@ -72,16 +92,5 @@ export class RecordsService {
 
   async deleteRecord(where: Prisma.RecordWhereUniqueInput) {
     return this.prismaService.record.delete({where});
-  }
-
-  async checkCurrentUserIsRecordOwner(
-    payload: CurrentUserPayload,
-    where: Prisma.RecordWhereUniqueInput,
-  ) {
-    return this.prismaService.record
-      .findUnique({where})
-      .user({select: {sub: true}})
-      .then((user) => Boolean(user?.sub === payload.sub))
-      .catch(() => false);
   }
 }

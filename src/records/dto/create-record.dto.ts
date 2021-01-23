@@ -1,11 +1,9 @@
 import {ArgsType, Field, ID, InputType} from '@nestjs/graphql';
-import {IsMongoId, Max, Min, ValidateNested} from 'class-validator';
+import {IsMongoId, ValidateNested} from 'class-validator';
 
 @InputType()
-export class CreateRecordDataUserInput {
+export class CreateRecordUserInput {
   @Field(() => ID)
-  @Min(3)
-  @Max(16)
   userName!: string;
 }
 
@@ -23,14 +21,14 @@ export class CreateRecordDataInput {
 
   @Field(() => Boolean)
   reading!: boolean;
-
-  @Field(() => CreateRecordDataUserInput)
-  @ValidateNested()
-  user!: CreateRecordDataUserInput;
 }
 
 @ArgsType()
 export class CreateRecordArgs {
+  @Field(() => CreateRecordUserInput, {nullable: false})
+  @ValidateNested()
+  user!: CreateRecordUserInput;
+
   @Field(() => CreateRecordDataInput, {nullable: false})
   @ValidateNested()
   data!: CreateRecordDataInput;

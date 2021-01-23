@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   NotFoundException,
   UnauthorizedException,
   UseGuards,
@@ -40,22 +41,33 @@ export class RecordsResolver {
     @Args({type: () => GetRecordArgs})
     {id}: GetRecordArgs,
   ) {
-    return this.recordsService.getRecord({
-      id: parseInt(id, 10),
-    });
+    return this.recordsService.getRecord({id: parseInt(id, 10)});
   }
 
   @Mutation(() => RecordEntity)
   async createRecord(
+    @CurrentUser() currentUser: CurrentUserPayload,
+
     @Args({type: () => CreateRecordArgs})
-    {data: {user, ...data}}: CreateRecordArgs,
+    {user, data}: CreateRecordArgs,
   ) {
-    if (!(await this.recordsService.checkIfBookExist(data.bookId)))
+    if (
+      !(await this.recordsService.isCurrentUserMe(currentUser, user.userName))
+    )
+      throw new UnauthorizedException({
+        userName: user.userName,
+      });
+
+    if (!(await this.recordsService.isBookExist(data.bookId)))
       throw new NotFoundException({bookId: data.bookId});
-    return this.recordsService.createRecord({
-      ...data,
-      user,
-    });
+
+    if (await this.recordsService.isAlreadyRecorded(user.userName, data.bookId))
+      throw new ConflictException({
+        userName: user.userName,
+        bookId: data.bookId,
+      });
+
+    return this.recordsService.createRecord(user, data);
   }
 
   @Mutation(() => RecordEntity)
@@ -66,13 +78,18 @@ export class RecordsResolver {
     {where, data}: UpdateRecordArgs,
   ) {
     const parsedWhere = {id: parseInt(where.id, 10)};
+
+    if (!(await this.recordsService.isExistRecord(parsedWhere)))
+      throw new NotFoundException({where});
+
     if (
-      !(await this.recordsService.checkCurrentUserIsRecordOwner(
+      !(await this.recordsService.isCurrentUserRecordOwner(
         currentUser,
         parsedWhere,
       ))
     )
-      throw new UnauthorizedException([where]);
+      throw new UnauthorizedException({where});
+
     return this.recordsService.updateRecord(parsedWhere, data);
   }
 
@@ -84,13 +101,17 @@ export class RecordsResolver {
     {where}: DeleteRecordArgs,
   ) {
     const parsedWhere = {id: parseInt(where.id, 10)};
+
+    if (!(await this.recordsService.isExistRecord(parsedWhere)))
+      throw new NotFoundException({where});
+
     if (
-      !(await this.recordsService.checkCurrentUserIsRecordOwner(
+      !(await this.recordsService.isCurrentUserRecordOwner(
         currentUser,
         parsedWhere,
       ))
     )
-      throw new UnauthorizedException([where]);
+      throw new UnauthorizedException({where});
 
     return this.recordsService.deleteRecord(parsedWhere);
   }

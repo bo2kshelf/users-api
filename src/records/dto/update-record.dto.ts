@@ -1,5 +1,4 @@
 import {ArgsType, Field, ID, InputType} from '@nestjs/graphql';
-import {IsMongoId} from 'class-validator';
 
 @InputType()
 export class UpdateRecordDataUserInput {
@@ -9,10 +8,6 @@ export class UpdateRecordDataUserInput {
 
 @InputType()
 export class UpdateRecordDataInput {
-  @Field(() => ID, {nullable: true})
-  @IsMongoId()
-  bookId?: string;
-
   @Field(() => Boolean, {nullable: true})
   have?: boolean;
 
