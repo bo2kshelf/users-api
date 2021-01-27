@@ -39,9 +39,9 @@ export class RecordsResolver {
   @Query(() => RecordEntity)
   async record(
     @Args({type: () => GetRecordArgs})
-    {id}: GetRecordArgs,
+    where: GetRecordArgs,
   ) {
-    return this.recordsService.getRecord({id: parseInt(id, 10)});
+    return this.recordsService.getRecord(where);
   }
 
   @Mutation(() => RecordEntity)
@@ -77,20 +77,15 @@ export class RecordsResolver {
     @Args({type: () => UpdateRecordArgs})
     {where, data}: UpdateRecordArgs,
   ) {
-    const parsedWhere = {id: parseInt(where.id, 10)};
-
-    if (!(await this.recordsService.isExistRecord(parsedWhere)))
+    if (!(await this.recordsService.isExistRecord(where)))
       throw new NotFoundException({where});
 
     if (
-      !(await this.recordsService.isCurrentUserRecordOwner(
-        currentUser,
-        parsedWhere,
-      ))
+      !(await this.recordsService.isCurrentUserRecordOwner(currentUser, where))
     )
       throw new UnauthorizedException({where});
 
-    return this.recordsService.updateRecord(parsedWhere, data);
+    return this.recordsService.updateRecord(where, data);
   }
 
   @Mutation(() => RecordEntity)
@@ -100,19 +95,14 @@ export class RecordsResolver {
     @Args({type: () => DeleteRecordArgs})
     {where}: DeleteRecordArgs,
   ) {
-    const parsedWhere = {id: parseInt(where.id, 10)};
-
-    if (!(await this.recordsService.isExistRecord(parsedWhere)))
+    if (!(await this.recordsService.isExistRecord(where)))
       throw new NotFoundException({where});
 
     if (
-      !(await this.recordsService.isCurrentUserRecordOwner(
-        currentUser,
-        parsedWhere,
-      ))
+      !(await this.recordsService.isCurrentUserRecordOwner(currentUser, where))
     )
       throw new UnauthorizedException({where});
 
-    return this.recordsService.deleteRecord(parsedWhere);
+    return this.recordsService.deleteRecord(where);
   }
 }

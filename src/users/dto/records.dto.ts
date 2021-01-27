@@ -7,7 +7,7 @@ import {
   Int,
   registerEnumType,
 } from '@nestjs/graphql';
-import {IsInt, IsNumberString, Validate, ValidateNested} from 'class-validator';
+import {IsInt, Validate, ValidateNested} from 'class-validator';
 import {CannotUseWith} from '../../validators/cannot-use-with.validator';
 
 export enum UserRecordsArgsOrderByEnum {
@@ -33,9 +33,6 @@ export class UserRecordsArgsOrderBy {
 @InputType()
 export class UserRecordsArgsCursor {
   @Field(() => ID)
-  @IsNumberString({
-    no_symbols: true, // eslint-disable-line @typescript-eslint/naming-convention
-  })
   id!: string;
 }
 

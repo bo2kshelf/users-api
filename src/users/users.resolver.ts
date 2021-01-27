@@ -42,18 +42,9 @@ export class UsersResolver {
   async records(
     @Parent() {userName}: UserEntity,
     @Args({type: () => UserRecordsArgs})
-    {cursor, ...args}: UserRecordsArgs,
+    args: UserRecordsArgs,
   ) {
-    return this.usersService.getRecords(
-      {userName},
-      {
-        ...args,
-        cursor: cursor && {
-          ...cursor,
-          id: cursor.id ? parseInt(cursor.id, 10) : undefined,
-        },
-      },
-    );
+    return this.usersService.getRecords({userName}, args);
   }
 
   @ResolveField(() => Int)
