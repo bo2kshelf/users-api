@@ -7,19 +7,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  sub       String  @id
-  profile   Profile @relation(fields: [profileId], references: [id])
-  profileId String
-}
-
 model Profile {
   id          String   @id @default(uuid())
   userName    String   @unique
   displayName String
   picture     String
   records     Record[]
-  user        User?
 }
 
 model Record {
