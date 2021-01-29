@@ -47,6 +47,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "querystringify": "^2.2.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "6.6.3"
   },
@@ -56,6 +57,7 @@
     "@commitlint/config-conventional": "11.0.0",
     "@nestjs/cli": "7.5.4",
     "@nestjs/schematics": "7.2.6",
+    "@types/querystringify": "^2.0.0",
     "@nestjs/testing": "7.6.5",
     "@prisma/cli": "^2.14.0",
     "@shopify/eslint-plugin": "39.0.3",

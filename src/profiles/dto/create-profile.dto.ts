@@ -15,6 +15,9 @@ export class CreateProfileDataInput {
   @Field(() => String)
   @IsUrl()
   picture!: string;
+
+  @Field(() => ID)
+  userId!: string;
 }
 
 @ArgsType()

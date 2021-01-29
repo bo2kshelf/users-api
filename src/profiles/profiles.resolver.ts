@@ -1,4 +1,4 @@
-import {InternalServerErrorException, NotFoundException} from '@nestjs/common';
+import {NotFoundException} from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -44,12 +44,6 @@ export class ProfilesResolver {
   async createProfile(
     @Args({type: () => CreateProfileArgs}) {data}: CreateProfileArgs,
   ) {
-    try {
-      const result = await this.profileService.createProfile(data);
-      if (!result) throw new InternalServerErrorException({data});
-      return result;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
+    return this.profileService.createProfile(data);
   }
 }

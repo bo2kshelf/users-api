@@ -10,8 +10,21 @@ export class ProfilesService {
     return this.prismaService.profile.findUnique({where});
   }
 
-  createProfile(data: Prisma.ProfileCreateInput) {
-    return this.prismaService.profile.create({data});
+  createProfile({
+    userId,
+    ...data
+  }: {
+    userName: string;
+    displayName: string;
+    picture: string;
+    userId: string;
+  }) {
+    return this.prismaService.profile.create({
+      data: {
+        ...data,
+        user: {connect: {id: userId}},
+      },
+    });
   }
 
   async getRecords(

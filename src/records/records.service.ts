@@ -19,9 +19,13 @@ export class RecordsService {
     currentUser: CurrentUserPayload,
     userName: string,
   ): Promise<boolean> {
+    return true;
+
+    /*
     return this.prismaService.user
       .findUnique({where: {sub: currentUser.sub}, select: {profile: true}})
       .then((user) => user?.profile.userName === userName);
+      */
   }
 
   async isBookExist(id: string): Promise<boolean> {
@@ -56,10 +60,14 @@ export class RecordsService {
     currentUser: CurrentUserPayload,
     where: Prisma.RecordWhereUniqueInput,
   ): Promise<boolean> {
+    return true;
+
+    /*
     return this.prismaService.record
       .findUnique({where, select: {profile: {select: {user: true}}}})
       .then((record) => record?.profile?.user?.sub === currentUser.sub)
       .catch(() => false);
+    */
   }
 
   async getRecord(where: Prisma.RecordWhereUniqueInput) {

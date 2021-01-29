@@ -7,12 +7,30 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id         String      @id @default(uuid())
+  userGitHub UserGitHub?
+  profile    Profile?
+}
+
+model UserGitHub {
+  id          String @id @default(uuid())
+  githubId    String @unique
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String
+  userName    String
+  displayName String
+  picture     String
+}
+
 model Profile {
   id          String   @id @default(uuid())
   userName    String   @unique
   displayName String
   picture     String
   records     Record[]
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 model Record {
@@ -23,6 +41,6 @@ model Record {
   have      Boolean
   read      Boolean
   reading   Boolean
-  profile   Profile? @relation(fields: [profileId], references: [id])
-  profileId String?
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  profileId String
 }
