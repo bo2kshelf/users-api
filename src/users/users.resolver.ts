@@ -1,4 +1,4 @@
-import {UseGuards} from '@nestjs/common';
+import {UnauthorizedException, UseGuards} from '@nestjs/common';
 import {Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
 import {GqlAuthGuard} from '../auth/gql-auth.guard';
 import {GitHubUserEntity} from '../github-users/github-user.entity';
@@ -22,9 +22,13 @@ export class UsersResolver {
     return this.usersService.getGitHubUser({id});
   }
 
-  @Query(() => UserEntity, {nullable: true})
+  @Query(() => UserEntity)
   @UseGuards(GqlAuthGuard)
-  async currentUser(@CurrentUser() {id}: CurrentUserPayload) {
-    return this.usersService.getUser({id});
+  async currentUser(
+    @CurrentUser() {id}: CurrentUserPayload,
+  ): Promise<UserEntity | null> {
+    const user = await this.usersService.getUser({id});
+    if (!user) throw new UnauthorizedException();
+    return user;
   }
 }
