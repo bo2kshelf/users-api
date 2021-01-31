@@ -10,6 +10,10 @@ export class ProfilesService {
     return this.prismaService.profile.findUnique({where});
   }
 
+  getAllProfiles() {
+    return this.prismaService.profile.findMany();
+  }
+
   createProfile({
     userId,
     ...data

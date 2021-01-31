@@ -40,6 +40,11 @@ export class ProfilesResolver {
     return result;
   }
 
+  @Query(() => [ProfileEntity])
+  async allProfiles() {
+    return this.profileService.getAllProfiles();
+  }
+
   @Mutation(() => ProfileEntity)
   async createProfile(
     @Args({type: () => CreateProfileArgs}) {data}: CreateProfileArgs,
