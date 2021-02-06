@@ -6,15 +6,15 @@ import {PrismaService} from '../prisma/prisma.service';
 export class AccountsService {
   constructor(private prismaService: PrismaService) {}
 
-  getProfile(where: Prisma.ProfileWhereUniqueInput) {
-    return this.prismaService.profile.findUnique({where});
+  getAccount(where: Prisma.AccountWhereUniqueInput) {
+    return this.prismaService.account.findUnique({where});
   }
 
-  getAllProfiles() {
-    return this.prismaService.profile.findMany();
+  getAllAccounts() {
+    return this.prismaService.account.findMany();
   }
 
-  createProfile({
+  createAccount({
     userId,
     ...data
   }: {
@@ -23,29 +23,11 @@ export class AccountsService {
     picture: string;
     userId: string;
   }) {
-    return this.prismaService.profile.create({
+    return this.prismaService.account.create({
       data: {
         ...data,
         user: {connect: {id: userId}},
       },
     });
-  }
-
-  async getRecords(
-    where: Prisma.ProfileWhereUniqueInput,
-    args: {
-      cursor?: Prisma.FindManyRecordArgs['cursor'];
-      skip?: number;
-      take?: number;
-      orderBy?: Pick<Prisma.RecordOrderByInput, 'createdAt' | 'updatedAt'>;
-      where?: Prisma.RecordWhereInput;
-    },
-  ) {
-    return this.prismaService.profile
-      .findUnique({
-        where,
-        select: {records: true},
-      })
-      .records(args);
   }
 }

@@ -22,20 +22,20 @@ export class AccountsResolver {
 
   @Query(() => AccountEntity)
   async account(@Args({type: () => GetAccountArgs}) where: GetAccountArgs) {
-    const result = await this.accountsService.getProfile(where);
+    const result = await this.accountsService.getAccount(where);
     if (!result) throw new NotFoundException(where);
     return result;
   }
 
   @Query(() => [AccountEntity])
   async allAccounts() {
-    return this.accountsService.getAllProfiles();
+    return this.accountsService.getAllAccounts();
   }
 
   @Mutation(() => AccountEntity)
-  async createProfile(
+  async createAccount(
     @Args({type: () => CreateAccountArgs}) {data}: CreateAccountArgs,
   ) {
-    return this.accountsService.createProfile(data);
+    return this.accountsService.createAccount(data);
   }
 }

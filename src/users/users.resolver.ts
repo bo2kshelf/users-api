@@ -13,7 +13,7 @@ export class UsersResolver {
 
   @ResolveField(() => AccountEntity, {nullable: true})
   async account(@Parent() {id}: UserEntity): Promise<{id: string} | null> {
-    return this.usersService.getProfile({id});
+    return this.usersService.getAccount({id});
   }
 
   @ResolveField(() => GitHubUserEntity, {nullable: true})
