@@ -1,0 +1,33 @@
+datasource db {
+  provider = "mysql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         String      @id @default(uuid())
+  userGitHub UserGitHub?
+  account    Account?
+}
+
+model UserGitHub {
+  id          String @id @default(uuid())
+  githubId    String @unique
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String
+  userName    String
+  displayName String
+  picture     String
+}
+
+model Account {
+  id          String @id @default(uuid())
+  userName    String @unique
+  displayName String
+  picture     String
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String
+}

@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# Editor
+.vscode/
+!.vscode/extensions.json
+
+# output
+dist/
+
+# logfiles
+*.log
+
+# test
+coverage/
+junit/
+
+# cache
+.eslintcache
+
+# environments
+.env*
+!.env.example
+
+# package-lock.json
+package-lock.json
+
+# database
+*.db
