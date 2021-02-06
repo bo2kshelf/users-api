@@ -2,7 +2,7 @@ import {ArgsType, Field, ID, InputType} from '@nestjs/graphql';
 import {IsAlphanumeric, IsUrl, Length} from 'class-validator';
 
 @InputType()
-export class CreateProfileDataInput {
+export class CreateAccountDataInput {
   @Field(() => ID)
   @IsAlphanumeric()
   @Length(1, 32)
@@ -21,7 +21,7 @@ export class CreateProfileDataInput {
 }
 
 @ArgsType()
-export class CreateProfileArgs {
-  @Field(() => CreateProfileDataInput, {nullable: false})
-  data!: CreateProfileDataInput;
+export class CreateAccountArgs {
+  @Field(() => CreateAccountDataInput, {nullable: false})
+  data!: CreateAccountDataInput;
 }

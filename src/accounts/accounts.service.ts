@@ -3,7 +3,7 @@ import {Prisma} from '@prisma/client';
 import {PrismaService} from '../prisma/prisma.service';
 
 @Injectable()
-export class ProfilesService {
+export class AccountsService {
   constructor(private prismaService: PrismaService) {}
 
   getProfile(where: Prisma.ProfileWhereUniqueInput) {

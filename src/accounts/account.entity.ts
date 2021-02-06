@@ -1,8 +1,8 @@
 import {Directive, Field, ID, ObjectType} from '@nestjs/graphql';
 
-@ObjectType('Profile')
+@ObjectType('Account')
 @Directive('@key(fields: "id")')
-export class ProfileEntity {
+export class AccountEntity {
   @Field(() => ID)
   id!: string;
 

@@ -1,11 +1,9 @@
 import {Module} from '@nestjs/common';
 import {GraphQLFederationModule} from '@nestjs/graphql';
+import {AccountsModule} from './accounts/accounts.module';
 import {AuthModule} from './auth/auth.module';
-import {BooksModule} from './book/books.module';
 import {GitHubUsersModule} from './github-users/github-users.module';
 import {PrismaModule} from './prisma/prisma.module';
-import {ProfilesModule} from './profiles/profiles.module';
-import {RecordsModule} from './records/records.module';
 import {UsersModule} from './users/users.module';
 
 @Module({
@@ -15,9 +13,7 @@ import {UsersModule} from './users/users.module';
     AuthModule,
     UsersModule,
     GitHubUsersModule,
-    ProfilesModule,
-    BooksModule,
-    RecordsModule,
+    AccountsModule,
   ],
 })
 export class AppModule {}
