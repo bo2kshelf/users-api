@@ -23,26 +23,9 @@ export class UsersService {
       .userGitHub();
   }
 
-  async getProfile(where: Prisma.ProfileWhereUniqueInput) {
+  async getAccount(where: Prisma.UserWhereUniqueInput) {
     return this.prismaService.user
-      .findUnique({where, select: {profile: true}})
-      .profile();
-  }
-
-  async getRecords(
-    where: Prisma.ProfileWhereUniqueInput,
-    args: {
-      cursor?: Prisma.FindManyRecordArgs['cursor'];
-      skip?: number;
-      take?: number;
-      orderBy?: Pick<Prisma.RecordOrderByInput, 'createdAt' | 'updatedAt'>;
-      where?: Prisma.RecordWhereInput;
-    },
-  ) {
-    return this.prismaService.profile.findUnique({where}).records({...args});
-  }
-
-  async getRecordsCount(where: Prisma.ProfileWhereUniqueInput) {
-    return this.prismaService.record.count({where: {profile: where}});
+      .findUnique({where, select: {account: true}})
+      .account();
   }
 }
