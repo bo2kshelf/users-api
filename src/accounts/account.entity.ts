@@ -12,6 +12,5 @@ export class AccountEntity {
   @Field(() => String)
   displayName!: string;
 
-  @Field(() => String)
   picture!: string;
 }
