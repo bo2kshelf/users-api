@@ -1,23 +1,36 @@
-import {NotFoundException} from '@nestjs/common';
+import {Inject, NotFoundException} from '@nestjs/common';
+import {ConfigType} from '@nestjs/config';
 import {
   Args,
   Mutation,
+  Parent,
   Query,
+  ResolveField,
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
 import {AccountEntity} from './account.entity';
+import {AccountsConfig} from './accounts.config';
 import {AccountsService} from './accounts.service';
 import {CreateAccountArgs} from './dto/create-account.dto';
 import {GetAccountArgs} from './dto/get-account.dto';
 
 @Resolver(() => AccountEntity)
 export class AccountsResolver {
-  constructor(private readonly accountsService: AccountsService) {}
+  constructor(
+    @Inject(AccountsConfig.KEY)
+    private readonly config: ConfigType<typeof AccountsConfig>,
+    private readonly accountsService: AccountsService,
+  ) {}
 
   @ResolveReference()
   resolveReference(reference: {__typename: string; id: string}) {
     return this.account({id: reference.id});
+  }
+
+  @ResolveField(() => String)
+  picture(@Parent() {picture}: AccountEntity) {
+    return new URL(`/${picture}`, this.config.pictureProxyBaseUrl).toString();
   }
 
   @Query(() => AccountEntity)
