@@ -11,6 +11,5 @@ export class GitHubUserEntity {
   @Field(() => String, {nullable: false})
   displayName!: string;
 
-  @Field(() => String, {nullable: false})
   picture!: string;
 }
