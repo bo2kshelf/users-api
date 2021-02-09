@@ -9,8 +9,8 @@ import {
   Resolver,
   ResolveReference,
 } from '@nestjs/graphql';
+import {CommonConfig} from '../configs/common.config';
 import {AccountEntity} from './account.entity';
-import {AccountsConfig} from './accounts.config';
 import {AccountsService} from './accounts.service';
 import {CreateAccountArgs} from './dto/create-account.dto';
 import {GetAccountArgs} from './dto/get-account.dto';
@@ -18,8 +18,8 @@ import {GetAccountArgs} from './dto/get-account.dto';
 @Resolver(() => AccountEntity)
 export class AccountsResolver {
   constructor(
-    @Inject(AccountsConfig.KEY)
-    private readonly config: ConfigType<typeof AccountsConfig>,
+    @Inject(CommonConfig.KEY)
+    private readonly config: ConfigType<typeof CommonConfig>,
     private readonly accountsService: AccountsService,
   ) {}
 
@@ -30,7 +30,7 @@ export class AccountsResolver {
 
   @ResolveField(() => String)
   picture(@Parent() {picture}: AccountEntity) {
-    return new URL(`/${picture}`, this.config.pictureProxyBaseUrl).toString();
+    return new URL(`/${picture}`, this.config.imageproxyBaseUrl).toString();
   }
 
   @Query(() => AccountEntity)
