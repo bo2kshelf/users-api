@@ -172,7 +172,6 @@ workflows:
             branches:
               only: develop
       - docker/publish:
-          name: docker-publish-develop
           context:
             - ghcr
           requires:
@@ -185,11 +184,14 @@ workflows:
           registry: ghcr.io
           tag: develop
       - docker/publish:
-          name: docker-publish-default
           context:
             - ghcr
           requires:
             - docker/hadolint
             - build
+          filters:
+            branches:
+              ignore:
+                - develop
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           registry: ghcr.io
