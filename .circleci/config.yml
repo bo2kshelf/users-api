@@ -170,14 +170,6 @@ workflows:
             - test-large
             - test-e2e
       - docker/publish:
-          deploy: false
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-          requires:
-            - build
-          filters:
-            branches:
-              only: develop
-      - docker/publish:
           context:
             - ghcr
           requires:
