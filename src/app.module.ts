@@ -1,8 +1,11 @@
 import {Module} from '@nestjs/common';
+import {ConfigModule, ConfigType} from '@nestjs/config';
+import {APP_GUARD} from '@nestjs/core';
 import {GraphQLFederationModule} from '@nestjs/graphql';
-import {AccountsModule} from './accounts/accounts.module';
+import {JwtModule} from '@nestjs/jwt';
+import {AuthConfig} from './auth/auth.config';
 import {AuthModule} from './auth/auth.module';
-import {GitHubUsersModule} from './github-users/github-users.module';
+import {GqlAuthzGuard} from './auth/gql-authz.guard';
 import {PrismaModule} from './prisma/prisma.module';
 import {UsersModule} from './users/users.module';
 
@@ -10,10 +13,16 @@ import {UsersModule} from './users/users.module';
   imports: [
     GraphQLFederationModule.forRoot({autoSchemaFile: true}),
     PrismaModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule.forFeature(AuthConfig)],
+      inject: [AuthConfig.KEY],
+      useFactory: async (config: ConfigType<typeof AuthConfig>) => ({
+        secret: config.jwt.secret,
+      }),
+    }),
     AuthModule,
     UsersModule,
-    GitHubUsersModule,
-    AccountsModule,
   ],
+  providers: [{provide: APP_GUARD, useClass: GqlAuthzGuard}],
 })
 export class AppModule {}

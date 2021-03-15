@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  user-api-mysql:
+    image: mysql:8.0
+    ports:
+      - published: ${USER_API_MYSQL_PORT}
+        target: 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USER_API_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${USER_API_MYSQL_DATABASE}
+    volumes:
+      - user-api-mysql-data:/var/lib/mysql
+
+volumes:
+  user-api-mysql-data:

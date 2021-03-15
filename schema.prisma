@@ -8,26 +8,8 @@ generator client {
 }
 
 model User {
-  id         String      @id @default(uuid())
-  userGitHub UserGitHub?
-  account    Account?
-}
-
-model UserGitHub {
-  id          String @id @default(uuid())
-  githubId    String @unique
-  user        User   @relation(fields: [userId], references: [id])
-  userId      String
-  userName    String
+  id          String  @id @default(uuid())
+  uniqueName  String  @unique
   displayName String
   picture     String
-}
-
-model Account {
-  id          String @id @default(uuid())
-  userName    String @unique
-  displayName String
-  picture     String
-  user        User   @relation(fields: [userId], references: [id])
-  userId      String
 }
