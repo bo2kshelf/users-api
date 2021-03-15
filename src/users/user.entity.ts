@@ -13,7 +13,4 @@ export class UserEntity {
   displayName!: string;
 
   picture!: string;
-
-  @Field(() => Boolean)
-  isAdmin!: boolean;
 }
