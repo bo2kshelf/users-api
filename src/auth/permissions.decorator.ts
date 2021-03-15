@@ -1,10 +1,13 @@
 import {SetMetadata} from '@nestjs/common';
 
-export const METADATA_KEY = 'permissions';
+export const PERMISSIONS_METADATA_KEY = 'permissions';
 
-export type Action = 'create' | 'read' | 'update' | 'delete';
-export type Target = 'users';
-export type Permission = `${Action}:${Target}`;
+export type CRUDAction = 'create' | 'read' | 'update' | 'delete';
+
+export type MyselfPermission = `read:myself` | `update:myself`;
+export type UsersPermission = `${CRUDAction}:users`;
+
+export type Permission = MyselfPermission | UsersPermission;
 
 export const Permissions = (...permissions: Permission[]) =>
-  SetMetadata(METADATA_KEY, permissions);
+  SetMetadata(PERMISSIONS_METADATA_KEY, permissions);

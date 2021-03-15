@@ -1,34 +1,54 @@
-import {UnauthorizedException, UseGuards} from '@nestjs/common';
-import {Parent, Query, ResolveField, Resolver} from '@nestjs/graphql';
-import {AccountEntity} from '../accounts/account.entity';
-import {GqlAuthGuard} from '../auth/gql-auth.guard';
-import {GitHubUserEntity} from '../github-users/github-user.entity';
-import {CurrentUser, CurrentUserPayload} from './current-user.decorator';
-import {UserEntity} from './users.entity';
+import {Inject, InternalServerErrorException, UseGuards} from '@nestjs/common';
+import {ConfigType} from '@nestjs/config';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
+import {User} from '@prisma/client';
+import {CurrentUser} from '../auth/current-user.decorator';
+import {GqlAuthnGuard} from '../auth/gql-authn.guard';
+import {Permissions} from '../auth/permissions.decorator';
+import {CommonConfig} from '../configs/common.config';
+import {CreateUserArgs} from './dto/create-user.dto';
+import {FindUserArgs} from './dto/find-user.dto';
+import {UserEntity} from './user.entity';
 import {UsersService} from './users.service';
 
 @Resolver(() => UserEntity)
 export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    @Inject(CommonConfig.KEY)
+    private readonly config: ConfigType<typeof CommonConfig>,
+    private readonly usersService: UsersService,
+  ) {}
 
-  @ResolveField(() => AccountEntity, {nullable: true})
-  async account(@Parent() {id}: UserEntity): Promise<{id: string} | null> {
-    return this.usersService.getAccount({id});
+  @ResolveField(() => String)
+  picture(@Parent() {picture}: UserEntity) {
+    return new URL(`/${picture}`, this.config.imageproxyBaseUrl).toString();
   }
 
-  @ResolveField(() => GitHubUserEntity, {nullable: true})
-  @UseGuards(GqlAuthGuard)
-  async github(@Parent() {id}: UserEntity): Promise<{id: string} | null> {
-    return this.usersService.getGitHubUser({id});
+  @Query(() => UserEntity, {name: 'user'})
+  @Permissions('read:users')
+  async findUser(@Args() args: FindUserArgs) {
+    return this.usersService.findUser(args);
   }
 
   @Query(() => UserEntity)
-  @UseGuards(GqlAuthGuard)
-  async currentUser(
-    @CurrentUser() {id}: CurrentUserPayload,
-  ): Promise<UserEntity | null> {
-    const user = await this.usersService.getUser({id});
-    if (!user) throw new UnauthorizedException();
-    return user;
+  @UseGuards(GqlAuthnGuard)
+  @Permissions('read:myself')
+  async currentUser(@CurrentUser() user: User): Promise<UserEntity | null> {
+    const result = this.usersService.findUser({id: user.id});
+    if (!result) throw new InternalServerErrorException();
+    return result;
+  }
+
+  @Mutation(() => UserEntity)
+  @Permissions('create:users')
+  async createUser(@Args() args: CreateUserArgs) {
+    return this.usersService.createUser(args);
   }
 }
