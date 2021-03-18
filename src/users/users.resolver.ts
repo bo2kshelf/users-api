@@ -37,6 +37,12 @@ export class UsersResolver {
     return this.usersService.findUser(args);
   }
 
+  @Query(() => [UserEntity])
+  @Permissions('read:users')
+  async allUsers() {
+    return this.usersService.allUsers();
+  }
+
   @Query(() => UserEntity)
   @UseGuards(GqlAuthnGuard)
   @Permissions('read:myself')
