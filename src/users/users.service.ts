@@ -10,6 +10,10 @@ export class UsersService {
     return this.prismaService.user.findUnique({where});
   }
 
+  async allUsers() {
+    return this.prismaService.user.findMany();
+  }
+
   async createUser(data: Prisma.UserCreateInput) {
     return this.prismaService.user.create({data});
   }
