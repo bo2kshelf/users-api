@@ -53,7 +53,7 @@
     "@arkweid/lefthook": "0.7.2",
     "@commitlint/cli": "11.0.0",
     "@commitlint/config-conventional": "11.0.0",
-    "@nestjs/cli": "7.5.4",
+    "@nestjs/cli": "7.6.0",
     "@nestjs/schematics": "7.2.6",
     "@nestjs/testing": "7.6.5",
     "@prisma/cli": "^2.14.0",
