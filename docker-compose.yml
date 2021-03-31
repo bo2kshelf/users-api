@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   user-api-mysql:
-    image: mysql:8.0@sha256:5d1d733f32c28d47061e9d5c2b1fb49b4628c4432901632a70019ec950eda491
+    image: mysql:8.0@sha256:c35eb76bbccfd0138c8c68ccb9b4cffe42c488a27f64ddc31a2b5f65aa93fce6
     ports:
       - published: ${USER_API_MYSQL_PORT}
         target: 3306
