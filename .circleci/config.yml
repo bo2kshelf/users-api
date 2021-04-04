@@ -22,7 +22,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -32,7 +32,7 @@ jobs:
 
   lint-prettier:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -40,7 +40,7 @@ jobs:
 
   lint-eslint:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -56,7 +56,7 @@ jobs:
 
   ts-check:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -64,7 +64,7 @@ jobs:
 
   test-small:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -87,7 +87,7 @@ jobs:
 
   test-medium:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -110,7 +110,7 @@ jobs:
 
   test-large:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
@@ -132,7 +132,7 @@ jobs:
 
   test-e2e:
     docker:
-      - image: circleci/node:14.15.3
+      - image: circleci/node:14.16.0
     steps:
       - checkout
       - install-packages
