@@ -7,6 +7,7 @@ import {
   Query,
   ResolveField,
   Resolver,
+  ResolveReference,
 } from '@nestjs/graphql';
 import {User} from '@prisma/client';
 import {CurrentUser} from '../auth/current-user.decorator';
@@ -25,6 +26,11 @@ export class UsersResolver {
     private readonly config: ConfigType<typeof CommonConfig>,
     private readonly usersService: UsersService,
   ) {}
+
+  @ResolveReference()
+  resolveReference(reference: {__typename: string; id: string}) {
+    return this.usersService.findUser({id: reference.id});
+  }
 
   @ResolveField(() => String)
   picture(@Parent() {picture}: UserEntity) {
